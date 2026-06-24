@@ -30,6 +30,7 @@ const MENU_DATABASE = [
   { name: "トッピング半熟卵", price: 50, code: "4301", category: "appetizer", description: "いろんな料理に合わせられるとろ〜り半熟卵。" },
   { name: "野菜ペースト", price: 100, code: "4304", category: "appetizer", description: "ハンバーグやチキンにぴったりの特製野菜ソース。" },
   { name: "トッピング粉チーズ", price: 100, code: "4307", category: "appetizer", description: "イタリア直輸入の濃厚ペコリーノ・ロマーノ粉チーズ。" },
+  { name: "サイゼリヤドレッシング(テイクアウト)", price: 500, code: "5305", category: "appetizer", description: "お持ち帰り用のオリジナルドレッシング（500mlボトル）。" },
 
   // Salads & Soups (サラダ・スープ) - Category: salad
   { name: "小エビのサラダ", price: 350, code: "1202", category: "salad", description: "ぷりぷりの甘エビがのった看板サラダ。" },
