@@ -952,7 +952,7 @@ function handlePass() {
 
   let timeOutForSurvival = false;
   if (gameState.format === 'survival') {
-    gameState.timeLeft = Math.max(0, gameState.timeLeft - 3);
+    gameState.timeLeft = Math.max(0, gameState.timeLeft - 5);
     if (gameState.timeLeft <= 0) {
       gameState.timeLeft = 0;
       elements.timerText.textContent = '0.0秒';
