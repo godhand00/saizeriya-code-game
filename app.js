@@ -950,6 +950,18 @@ function handlePass() {
     status: 'passed'
   });
 
+  let timeOutForSurvival = false;
+  if (gameState.format === 'survival') {
+    gameState.timeLeft = Math.max(0, gameState.timeLeft - 3);
+    if (gameState.timeLeft <= 0) {
+      gameState.timeLeft = 0;
+      elements.timerText.textContent = '0.0秒';
+      elements.timerBar.style.width = '0%';
+      if (gameState.timerId) clearInterval(gameState.timerId);
+      timeOutForSurvival = true;
+    }
+  }
+
   if (gameState.format === 'timeattack') {
     elements.progressValue.textContent = `${gameState.currentIndex + 1}/${gameState.questions.length}`;
   } else if (gameState.format === 'practice') {
@@ -958,8 +970,12 @@ function handlePass() {
 
   setTimeout(() => {
     slots.forEach(slot => slot.classList.remove('flash-red'));
-    gameState.currentIndex++;
-    loadQuestion();
+    if (timeOutForSurvival) {
+      endGame(true);
+    } else {
+      gameState.currentIndex++;
+      loadQuestion();
+    }
   }, 200);
 }
 
