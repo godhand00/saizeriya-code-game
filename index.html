@@ -159,6 +159,10 @@
               <span class="hint-text">ヒント: <span id="hint-content" class="font-numeric">AA--</span></span>
             </div>
           </div>
+          <!-- 1問ごとの時間制限バー -->
+          <div class="question-timer-track">
+            <div id="question-timer-bar" class="question-timer-bar"></div>
+          </div>
         </div>
 
         <!-- Code Input Slots -->
@@ -185,6 +189,12 @@
               <path fill="currentColor" d="M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.9,16L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z" />
             </svg>
             <span>ギブアップ</span>
+          </button>
+          <button id="pass-btn" class="secondary-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2M12 4C16.42 4 20 7.58 20 12S16.42 20 12 20 4 16.42 4 12 7.58 4 12 4M9 8L16 12L9 16V8Z" />
+            </svg>
+            <span>パス (Space)</span>
           </button>
           <button id="reveal-hint-btn" class="secondary-btn">
             <svg viewBox="0 0 24 24" width="18" height="18">
@@ -310,6 +320,14 @@
               <div class="analysis-item">
                 <span class="analysis-label">苦手メニュー:</span>
                 <span id="analysis-slowest" class="analysis-val">アロスティチーニ (3.2秒)</span>
+              </div>
+            </div>
+
+            <!-- Review Answers Panel -->
+            <div class="review-box" id="review-panel">
+              <h4>答え合わせ（未正解・パス）</h4>
+              <div class="review-list" id="review-list">
+                <!-- Will be dynamically populated by JS -->
               </div>
             </div>
 

@@ -113,14 +113,14 @@ const MENU_DATABASE = [
   { name: "デカンタ白 (250ml)", price: 200, code: "3404", category: "drink", description: "フレッシュなハウスワイン白（デカンタ小サイズ）。" },
   { name: "デカンタ赤 (500ml)", price: 400, code: "3405", category: "drink", description: "フレッシュなハウスワイン赤（デカンタ大サイズ）。" },
   { name: "デカンタ白 (500ml)", price: 400, code: "3406", category: "drink", description: "フレッシュなハウスワイン白（デカンタ大サイズ）。" },
-  { name: "マグナム 赤 (1500ml)", price: 1100, code: "3407", category: "drink", description: "パーティーや大人数に、大容量のボトル赤ワイン。" },
-  { name: "マグナム 白 (1500ml)", price: 1100, code: "3408", category: "drink", description: "パーティーや大人数に、大容量のボトル白ワイン。" },
-  { name: "ランブルスコ ロゼ", price: 1100, code: "3412", category: "drink", description: "微発泡の爽やかで華やかな甘口ロゼスパークリングボトル。" },
-  { name: "ドン ラファエロ", price: 1100, code: "3413", category: "drink", description: "すっきりとしたキレの良い味わいの辛口白スパークリングボトル。" },
+  { name: "マグナム 赤 (1500ml)", price: 1100, code: "3407", category: "drink", description: "パーティーや大人数に、大容量 of ボトル赤ワイン。" },
+  { name: "マグナム 白 (1500ml)", price: 1100, code: "3408", category: "drink", description: "パーティーや大人数に、大容量 of ボトル白ワイン。" },
+  { name: "ランブルスコ ロゼ", price: 1100, code: "3412", category: "drink", description: "微発泡 of 爽やかで華やかな甘口ロゼスパークリングボトル。" },
+  { name: "ドン ラファエロ", price: 1100, code: "3413", category: "drink", description: "すっきりとしたキレ of 良い味わい of 辛口白スパークリングボトル。" },
   { name: "ランブルスコ セッコ", price: 1100, code: "3414", category: "drink", description: "微発泡で渋みが少なくすっきりした辛口赤スパークリングボトル。" },
-  { name: "ベルディッキオ", price: 1100, code: "3415", category: "drink", description: "イタリア直輸入のキリッとした辛口白ワインボトル。" },
-  { name: "キャンティ", price: 1100, code: "3416", category: "drink", description: "トスカーナ産の豊かな香りとまろやかな辛口赤ワインボトル。" },
-  { name: "キャンティ ルフィナ リゼルバ", price: 2200, code: "3419", category: "drink", description: "木樽で長期熟成されたコク深く芳醇な味わいの最高級赤ワインボトル。" }
+  { name: "ベルディッキオ", price: 1100, code: "3415", category: "drink", description: "イタリア直輸入 of キリッとした辛口白ワインボトル。" },
+  { name: "キャンティ", price: 1100, code: "3416", category: "drink", description: "トスカーナ産 of 豊かな香りとまろやかな辛口赤ワインボトル。" },
+  { name: "キャンティ ルフィナ リゼルバ", price: 2200, code: "3419", category: "drink", description: "木樽で長期熟成されたコク深く芳醇な味わい of 最高級赤ワインボトル。" }
 ];
 
 // --- AUDIO SYNTHESIZER (WEB AUDIO API) ---
@@ -350,13 +350,16 @@ let confetti;
 
 // --- STATE MANAGEMENT ---
 let gameState = {
+  // Config
   format: 'timeattack', // timeattack | survival | practice
   categories: ['all'],
   
+  // Game Session
   questions: [],
   currentIndex: 0,
   typedBuffer: [],
   
+  // Metrics
   score: 0,
   combo: 0,
   maxCombo: 0,
@@ -365,13 +368,19 @@ let gameState = {
   totalKeystrokes: 0,
   wrongKeystrokes: 0,
   
+  // Timers
   timerId: null,
-  timeLeft: 0,
-  elapsedTime: 0,
+  timeLeft: 0,       // For survival countdown
+  elapsedTime: 0,    // For timeattack stopwatch (ms)
   startTime: null,
   questionStartTime: null,
+  questionTimeLeft: 10, // Remaining time for current question (sec)
+  questionLimit: 10,    // Total limit per question (sec)
   
-  history: [],
+  // Log for breakdown
+  history: [], // { item, timeTaken, correct, status }
+  
+  // Control
   blockInput: false
 };
 
@@ -383,10 +392,12 @@ const screens = {
 };
 
 const elements = {
+  // Config
   startBtn: document.getElementById('start-game-btn'),
   soundToggleBtn: document.getElementById('sound-toggle-btn'),
   categorySelectors: document.getElementById('category-selectors'),
   
+  // Gameplay
   progressLabel: document.getElementById('progress-label'),
   progressValue: document.getElementById('progress-value'),
   timerBar: document.getElementById('timer-bar'),
@@ -402,8 +413,11 @@ const elements = {
   inputSlots: document.getElementById('input-slots'),
   virtualKeypad: document.getElementById('virtual-keypad'),
   giveUpBtn: document.getElementById('give-up-btn'),
+  passBtn: document.getElementById('pass-btn'),
   revealHintBtn: document.getElementById('reveal-hint-btn'),
+  questionTimerBar: document.getElementById('question-timer-bar'),
   
+  // Results
   rankBadge: document.getElementById('rank-badge'),
   receiptDate: document.getElementById('receipt-date'),
   receiptId: document.getElementById('receipt-id'),
@@ -419,7 +433,8 @@ const elements = {
   analysisSlowest: document.getElementById('analysis-slowest'),
   shareBtn: document.getElementById('share-twitter-btn'),
   retryBtn: document.getElementById('retry-btn'),
-  backHomeBtn: document.getElementById('back-home-btn')
+  backHomeBtn: document.getElementById('back-home-btn'),
+  reviewList: document.getElementById('review-list')
 };
 
 // --- INITIALIZATION ---
@@ -429,6 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCategoryChips();
 });
 
+// Sound button setup
 function updateSoundButtonUI() {
   const onIcon = elements.soundToggleBtn.querySelector('.sound-on-icon');
   const offIcon = elements.soundToggleBtn.querySelector('.sound-off-icon');
@@ -442,6 +458,7 @@ function updateSoundButtonUI() {
 }
 
 function initEventListeners() {
+  // Sound toggle
   elements.soundToggleBtn.addEventListener('click', () => {
     sounds.enabled = !sounds.enabled;
     updateSoundButtonUI();
@@ -451,14 +468,21 @@ function initEventListeners() {
     }
   });
 
+  // Start game
   elements.startBtn.addEventListener('click', () => {
     sounds.init();
     startGame();
   });
 
+  // Gameplay actions
   elements.giveUpBtn.addEventListener('click', () => {
     sounds.playClick();
     endGame(false);
+  });
+
+  elements.passBtn.addEventListener('click', () => {
+    sounds.playClick();
+    handlePass();
   });
 
   elements.revealHintBtn.addEventListener('click', () => {
@@ -466,6 +490,7 @@ function initEventListeners() {
     revealHint();
   });
 
+  // Results actions
   elements.retryBtn.addEventListener('click', () => {
     sounds.playClick();
     startGame();
@@ -481,19 +506,23 @@ function initEventListeners() {
     copyResultsToClipboard();
   });
 
+  // Keyboard input listener
   window.addEventListener('keydown', handlePhysicalKeyboardInput);
 }
 
+// Category checkbox chip interaction
 function setupCategoryChips() {
   const chips = elements.categorySelectors.querySelectorAll('.chip-option');
   chips.forEach(chip => {
     const input = chip.querySelector('input');
     
+    // Initial state matching
     if (input.checked) {
       chip.classList.add('checked');
     }
 
     input.addEventListener('change', () => {
+      // If "All" is selected, deselect others, or vice versa
       if (input.value === 'all') {
         if (input.checked) {
           chips.forEach(c => {
@@ -504,6 +533,7 @@ function setupCategoryChips() {
             }
           });
         } else {
+          // Prevent deselecting All if nothing else is selected
           const checkedCount = elements.categorySelectors.querySelectorAll('input:checked').length;
           if (checkedCount === 0) {
             input.checked = true;
@@ -513,10 +543,12 @@ function setupCategoryChips() {
         }
       } else {
         if (input.checked) {
+          // Deselect All
           const allChip = elements.categorySelectors.querySelector('input[value="all"]');
           allChip.checked = false;
           allChip.parentElement.classList.remove('checked');
         } else {
+          // If everything is deselected, auto-select All
           const checkedCount = elements.categorySelectors.querySelectorAll('input:checked').length;
           if (checkedCount === 0) {
             const allChip = elements.categorySelectors.querySelector('input[value="all"]');
@@ -526,6 +558,7 @@ function setupCategoryChips() {
         }
       }
       
+      // Update visual states for all
       chips.forEach(c => {
         const inner = c.querySelector('input');
         if (inner.checked) {
@@ -551,10 +584,12 @@ function switchScreen(targetScreenName) {
 
 // --- GAME LOGIC ---
 function startGame() {
+  // 1. Gather config
   const formatVal = document.querySelector('input[name="game-format"]:checked').value;
   const selectedCats = Array.from(elements.categorySelectors.querySelectorAll('input:checked'))
                             .map(input => input.value);
 
+  // 2. Build questions pool
   let pool = [];
   if (selectedCats.includes('all')) {
     pool = [...MENU_DATABASE];
@@ -562,18 +597,23 @@ function startGame() {
     pool = MENU_DATABASE.filter(item => selectedCats.includes(item.category));
   }
 
+  // Fallback in case of some weird state
   if (pool.length === 0) {
     pool = [...MENU_DATABASE];
   }
 
+  // Shuffle pool
   shuffleArray(pool);
 
+  // Set up game session state
   gameState.format = formatVal;
   gameState.categories = selectedCats;
   
   if (formatVal === 'timeattack') {
+    // Exactly 10 questions (or max pool size if smaller)
     gameState.questions = pool.slice(0, Math.min(10, pool.length));
   } else {
+    // Survival / Practice goes on, so store the whole pool
     gameState.questions = pool;
   }
   
@@ -589,21 +629,26 @@ function startGame() {
   gameState.history = [];
   gameState.blockInput = false;
   
+  // Set up timer / stats bar
   if (gameState.format === 'timeattack') {
     elements.progressLabel.textContent = '問題';
     elements.progressValue.textContent = `1/${gameState.questions.length}`;
+    
     gameState.elapsedTime = 0;
     elements.timerText.textContent = '0.0秒';
     elements.timerBar.style.width = '0%';
   } else if (gameState.format === 'survival') {
     elements.progressLabel.textContent = 'スコア';
     elements.progressValue.textContent = '0点';
-    gameState.timeLeft = 30;
+    
+    gameState.timeLeft = 30; // 30 seconds to start
     elements.timerText.textContent = '30.0秒';
     elements.timerBar.style.width = '100%';
   } else {
+    // Practice
     elements.progressLabel.textContent = '練習数';
     elements.progressValue.textContent = '0';
+    
     elements.timerText.textContent = '無限';
     elements.timerBar.style.width = '100%';
   }
@@ -611,31 +656,38 @@ function startGame() {
   elements.comboValue.textContent = '0';
   elements.comboBubble.classList.remove('pop');
 
+  // Question timer settings
+  gameState.questionLimit = 10;
+  gameState.questionTimeLeft = 10;
+
+  // Render Virtual Keypad (numeric only)
   renderKeypad();
+
+  // Show screen
   switchScreen('play');
   
+  // Start clocks
   gameState.startTime = Date.now();
   startTimer();
+
+  // Load first item
   loadQuestion();
 }
 
 function startTimer() {
   if (gameState.timerId) clearInterval(gameState.timerId);
 
-  if (gameState.format === 'timeattack') {
-    const tickTime = 100;
-    gameState.timerId = setInterval(() => {
+  const tickTime = 100; // ms
+  gameState.timerId = setInterval(() => {
+    // 1. Overall Game Timers
+    if (gameState.format === 'timeattack') {
       gameState.elapsedTime += tickTime;
       const totalSec = gameState.elapsedTime / 1000;
       elements.timerText.textContent = totalSec.toFixed(1) + '秒';
       
       const ratio = (gameState.currentIndex / gameState.questions.length) * 100;
       elements.timerBar.style.width = `${ratio}%`;
-    }, tickTime);
-  } else if (gameState.format === 'survival') {
-    const tickTime = 100;
-    const initialTime = 30;
-    gameState.timerId = setInterval(() => {
+    } else if (gameState.format === 'survival') {
       gameState.timeLeft -= (tickTime / 1000);
       
       if (gameState.timeLeft <= 0) {
@@ -643,12 +695,12 @@ function startTimer() {
         elements.timerText.textContent = '0.0秒';
         elements.timerBar.style.width = '0%';
         clearInterval(gameState.timerId);
-        endGame(true);
+        endGame(true); // Times up!
         return;
       }
       
       elements.timerText.textContent = gameState.timeLeft.toFixed(1) + '秒';
-      const ratio = Math.min((gameState.timeLeft / initialTime) * 100, 100);
+      const ratio = Math.min((gameState.timeLeft / 30) * 100, 100);
       elements.timerBar.style.width = `${ratio}%`;
       
       if (gameState.timeLeft < 5) {
@@ -656,11 +708,40 @@ function startTimer() {
       } else {
         elements.timerBar.style.backgroundColor = '';
       }
-    }, tickTime);
+    }
+
+    // 2. Per-Question Time Limit Timer (Disabled in Practice mode)
+    if (gameState.format !== 'practice' && !gameState.blockInput) {
+      gameState.questionTimeLeft -= (tickTime / 1000);
+      if (gameState.questionTimeLeft <= 0) {
+        gameState.questionTimeLeft = 0;
+        updateQuestionTimerUI();
+        handleTimeout();
+      } else {
+        updateQuestionTimerUI();
+      }
+    } else if (gameState.format === 'practice') {
+      elements.questionTimerBar.style.width = '100%';
+      elements.questionTimerBar.style.backgroundColor = 'var(--accent-green)';
+    }
+  }, tickTime);
+}
+
+function updateQuestionTimerUI() {
+  const ratio = Math.max((gameState.questionTimeLeft / gameState.questionLimit) * 100, 0);
+  elements.questionTimerBar.style.width = `${ratio}%`;
+  
+  if (gameState.questionTimeLeft < 3) {
+    elements.questionTimerBar.style.backgroundColor = 'var(--accent-red)';
+  } else if (gameState.questionTimeLeft < 6) {
+    elements.questionTimerBar.style.backgroundColor = 'var(--accent-yellow)';
+  } else {
+    elements.questionTimerBar.style.backgroundColor = '';
   }
 }
 
 function loadQuestion() {
+  // If we reach the end of the pool, reload
   if (gameState.currentIndex >= gameState.questions.length) {
     if (gameState.format === 'timeattack') {
       endGame(true);
@@ -679,20 +760,28 @@ function loadQuestion() {
 
   const currentItem = gameState.questions[gameState.currentIndex];
   
+  // Set category tag
   elements.categoryTag.textContent = getCategoryJapaneseName(currentItem.category);
   elements.categoryTag.className = `menu-badge badge-${currentItem.category}`;
 
+  // Update card text
   elements.displayName.textContent = currentItem.name;
   elements.displayPrice.textContent = `¥${currentItem.price}`;
 
+  // Reset hint
   if (gameState.format === 'practice') {
     revealHint(true);
   } else {
     elements.hintBox.classList.add('hidden');
   }
 
+  // Clear slots
   gameState.typedBuffer = [];
   updateInputSlots();
+
+  // Reset question timer
+  gameState.questionTimeLeft = gameState.questionLimit;
+  updateQuestionTimerUI();
   
   gameState.questionStartTime = Date.now();
   gameState.blockInput = false;
@@ -702,7 +791,7 @@ function updateInputSlots() {
   const slots = elements.inputSlots.querySelectorAll('.input-slot');
   
   slots.forEach((slot, index) => {
-    slot.className = 'input-slot';
+    slot.className = 'input-slot'; // reset classes
     
     if (gameState.typedBuffer[index] !== undefined) {
       slot.textContent = gameState.typedBuffer[index];
@@ -727,12 +816,14 @@ function handleInputCharacter(char) {
     updateInputSlots();
     highlightVirtualKey(char);
 
+    // Evaluate if full
     if (gameState.typedBuffer.length === 4) {
       evaluateAnswer();
     }
   }
 }
 
+// Backspace
 function handleBackspace() {
   if (gameState.blockInput) return;
 
@@ -744,6 +835,7 @@ function handleBackspace() {
   }
 }
 
+// Clear
 function handleClear() {
   if (gameState.blockInput) return;
 
@@ -765,6 +857,7 @@ function evaluateAnswer() {
   const slots = elements.inputSlots.querySelectorAll('.input-slot');
 
   if (typedCode === targetCode) {
+    // CORRECT!
     gameState.correctCount++;
     gameState.combo++;
     gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
@@ -779,8 +872,9 @@ function evaluateAnswer() {
       elements.comboBubble.classList.add('pop');
     }
 
+    // Time bonus for Survival
     if (gameState.format === 'survival') {
-      gameState.timeLeft += 3;
+      gameState.timeLeft += 3; // +3 seconds
       gameState.score += (100 + gameState.combo * 10);
       elements.progressValue.textContent = `${gameState.score}点`;
     } else if (gameState.format === 'timeattack') {
@@ -789,19 +883,22 @@ function evaluateAnswer() {
       elements.progressValue.textContent = `${gameState.currentIndex + 1}`;
     }
 
+    // Store in history log
     gameState.history.push({
       item: currentItem,
       timeTaken: responseTime,
       correct: true,
-      wrongCount: 0
+      status: 'correct'
     });
 
+    // Advance after brief delay
     setTimeout(() => {
       gameState.currentIndex++;
       loadQuestion();
     }, 180);
 
   } else {
+    // WRONG!
     gameState.wrongCount++;
     gameState.wrongKeystrokes += 4;
     gameState.combo = 0;
@@ -810,13 +907,16 @@ function evaluateAnswer() {
 
     sounds.playWrong();
 
+    // Visual shake and red flash
     elements.inputSlots.classList.add('shake-element');
     slots.forEach(slot => slot.classList.add('flash-red'));
 
+    // Deduct time for survival
     if (gameState.format === 'survival') {
       gameState.timeLeft = Math.max(0, gameState.timeLeft - 5);
     }
 
+    // Clean up error state after animation finishes
     setTimeout(() => {
       elements.inputSlots.classList.remove('shake-element');
       slots.forEach(slot => {
@@ -828,6 +928,76 @@ function evaluateAnswer() {
       gameState.blockInput = false;
     }, 350);
   }
+}
+
+// Pass / Skip question
+function handlePass() {
+  if (gameState.blockInput) return;
+  gameState.blockInput = true;
+
+  const currentItem = gameState.questions[gameState.currentIndex];
+  gameState.combo = 0;
+  elements.comboValue.textContent = '0';
+  elements.comboBubble.classList.remove('pop');
+
+  const slots = elements.inputSlots.querySelectorAll('.input-slot');
+  slots.forEach(slot => slot.classList.add('flash-red'));
+
+  gameState.history.push({
+    item: currentItem,
+    timeTaken: 0,
+    correct: false,
+    status: 'passed'
+  });
+
+  if (gameState.format === 'timeattack') {
+    elements.progressValue.textContent = `${gameState.currentIndex + 1}/${gameState.questions.length}`;
+  } else if (gameState.format === 'practice') {
+    elements.progressValue.textContent = `${gameState.currentIndex + 1}`;
+  }
+
+  setTimeout(() => {
+    slots.forEach(slot => slot.classList.remove('flash-red'));
+    gameState.currentIndex++;
+    loadQuestion();
+  }, 200);
+}
+
+// Question timeout (automatic skip)
+function handleTimeout() {
+  gameState.blockInput = true;
+
+  const currentItem = gameState.questions[gameState.currentIndex];
+  gameState.wrongCount++;
+  gameState.combo = 0;
+  elements.comboValue.textContent = '0';
+  elements.comboBubble.classList.remove('pop');
+
+  sounds.playWrong();
+
+  elements.inputSlots.classList.add('shake-element');
+  const slots = elements.inputSlots.querySelectorAll('.input-slot');
+  slots.forEach(slot => slot.classList.add('flash-red'));
+
+  if (gameState.format === 'survival') {
+    gameState.timeLeft = Math.max(0, gameState.timeLeft - 5);
+  } else if (gameState.format === 'timeattack') {
+    elements.progressValue.textContent = `${gameState.currentIndex + 1}/${gameState.questions.length}`;
+  }
+
+  gameState.history.push({
+    item: currentItem,
+    timeTaken: gameState.questionLimit,
+    correct: false,
+    status: 'timeout'
+  });
+
+  setTimeout(() => {
+    elements.inputSlots.classList.remove('shake-element');
+    slots.forEach(slot => slot.classList.remove('flash-red'));
+    gameState.currentIndex++;
+    loadQuestion();
+  }, 400);
 }
 
 function revealHint(autoPractice = false) {
@@ -846,12 +1016,14 @@ function revealHint(autoPractice = false) {
 function endGame(completed = true) {
   if (gameState.timerId) clearInterval(gameState.timerId);
 
+  // Play audio
   if (completed && (gameState.correctCount > 0)) {
     sounds.playVictory();
   } else {
     sounds.playGameOver();
   }
 
+  // Calculate statistics
   const totalItemsCount = gameState.currentIndex;
   const timeSec = (Date.now() - gameState.startTime) / 1000;
   
@@ -866,16 +1038,19 @@ function endGame(completed = true) {
     timeStr = `${min.toString().padStart(2, '0')}:${sec.padStart(4, '0')}`;
   }
 
+  // Accuracy calculation
   const idealKeys = gameState.correctCount * 4;
   const errorKeys = gameState.wrongCount * 4;
   const accuracy = idealKeys + errorKeys > 0 
     ? ((idealKeys / (idealKeys + errorKeys)) * 100).toFixed(1) 
     : '0.0';
 
+  // Speed: Average response time per correct item
   const speed = gameState.correctCount > 0 
     ? (timeSec / gameState.correctCount).toFixed(2) 
     : '0.00';
 
+  // Rank / Grade Determination
   const rank = calculateRank(gameState.correctCount, timeSec, parseFloat(accuracy));
   elements.rankBadge.textContent = rank;
   
@@ -898,10 +1073,17 @@ function endGame(completed = true) {
 
   elements.resultSpeed.textContent = `${speed}秒 / 個`;
 
+  // Order analysis: fastest vs slowest
   if (gameState.history.length > 0) {
-    const sorted = [...gameState.history].sort((a, b) => a.timeTaken - b.timeTaken);
-    elements.analysisFastest.textContent = `${sorted[0].item.name} (${sorted[0].timeTaken.toFixed(1)}秒)`;
-    elements.analysisSlowest.textContent = `${sorted[sorted.length - 1].item.name} (${sorted[sorted.length - 1].timeTaken.toFixed(1)}秒)`;
+    const correctHistory = gameState.history.filter(h => h.correct);
+    if (correctHistory.length > 0) {
+      const sorted = [...correctHistory].sort((a, b) => a.timeTaken - b.timeTaken);
+      elements.analysisFastest.textContent = `${sorted[0].item.name} (${sorted[0].timeTaken.toFixed(1)}秒)`;
+      elements.analysisSlowest.textContent = `${sorted[sorted.length - 1].item.name} (${sorted[sorted.length - 1].timeTaken.toFixed(1)}秒)`;
+    } else {
+      elements.analysisFastest.textContent = 'なし';
+      elements.analysisSlowest.textContent = 'なし';
+    }
   } else {
     elements.analysisFastest.textContent = 'なし';
     elements.analysisSlowest.textContent = 'なし';
@@ -917,28 +1099,30 @@ function endGame(completed = true) {
   let totalPrice = 0;
   
   gameState.history.forEach(log => {
-    const row = document.createElement('tr');
-    
-    const nameCol = document.createElement('td');
-    nameCol.textContent = log.item.name;
-    
-    const codeCol = document.createElement('td');
-    codeCol.className = 'font-numeric text-right';
-    codeCol.textContent = log.item.code;
-    
-    const priceCol = document.createElement('td');
-    priceCol.className = 'font-numeric text-right';
-    priceCol.textContent = `¥${log.item.price}`;
-    
-    row.appendChild(nameCol);
-    row.appendChild(codeCol);
-    row.appendChild(priceCol);
-    elements.receiptItems.appendChild(row);
-    
-    totalPrice += log.item.price;
+    if (log.correct) {
+      const row = document.createElement('tr');
+      
+      const nameCol = document.createElement('td');
+      nameCol.textContent = log.item.name;
+      
+      const codeCol = document.createElement('td');
+      codeCol.className = 'font-numeric text-right';
+      codeCol.textContent = log.item.code;
+      
+      const priceCol = document.createElement('td');
+      priceCol.className = 'font-numeric text-right';
+      priceCol.textContent = `¥${log.item.price}`;
+      
+      row.appendChild(nameCol);
+      row.appendChild(codeCol);
+      row.appendChild(priceCol);
+      elements.receiptItems.appendChild(row);
+      
+      totalPrice += log.item.price;
+    }
   });
 
-  if (gameState.history.length === 0) {
+  if (gameState.correctCount === 0) {
     const row = document.createElement('tr');
     row.innerHTML = `<td colspan="3" style="text-align:center;color:#888;">正解アイテムなし</td>`;
     elements.receiptItems.appendChild(row);
@@ -950,8 +1134,46 @@ function endGame(completed = true) {
   elements.receiptAccuracy.textContent = `${accuracy}%`;
   elements.receiptTotalPrice.textContent = `¥${totalPrice.toLocaleString()}`;
 
+  // --- RENDER REVIEW ANSWERS ---
+  elements.reviewList.innerHTML = '';
+  const failedItems = gameState.history.filter(h => !h.correct);
+  
+  if (failedItems.length > 0) {
+    failedItems.forEach(log => {
+      const itemRow = document.createElement('div');
+      itemRow.className = `review-item ${log.status === 'passed' ? 'passed' : ''}`;
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'review-item-name';
+      nameSpan.textContent = log.item.name;
+      
+      const detailsDiv = document.createElement('div');
+      detailsDiv.className = 'review-item-details';
+      
+      const codeSpan = document.createElement('span');
+      codeSpan.className = 'review-item-code font-numeric';
+      codeSpan.textContent = log.item.code;
+      
+      const statusSpan = document.createElement('span');
+      statusSpan.className = `review-item-status ${log.status === 'passed' ? 'status-passed' : 'status-timeout'}`;
+      statusSpan.textContent = log.status === 'passed' ? 'パス' : '時間切れ';
+      
+      detailsDiv.appendChild(codeSpan);
+      detailsDiv.appendChild(statusSpan);
+      itemRow.appendChild(nameSpan);
+      itemRow.appendChild(detailsDiv);
+      elements.reviewList.appendChild(itemRow);
+    });
+  } else {
+    const emptyMsg = document.createElement('div');
+    emptyMsg.className = 'review-empty-message';
+    emptyMsg.textContent = '全問正解！サイゼマスターです！💮';
+    elements.reviewList.appendChild(emptyMsg);
+  }
+
   switchScreen('results');
 
+  // Trigger confetti
   if (gameState.correctCount > 0 && parseFloat(accuracy) >= 90) {
     confetti.spawn(120);
   }
@@ -971,6 +1193,7 @@ function calculateRank(correct, timeSec, accuracy) {
     if (correct >= 10) return 'サイゼ通';
     return '一般客';
   } else {
+    // Practice Mode
     if (correct >= 30) return 'サイゼ魔人';
     if (correct >= 15) return 'サイゼ通';
     return '一般客';
@@ -1033,7 +1256,11 @@ function handlePhysicalKeyboardInput(e) {
   } else if (key === 'ESCAPE' || key === 'DELETE') {
     e.preventDefault();
     handleClear();
+  } else if (key === ' ' || key === 'SPACEBAR') {
+    e.preventDefault();
+    handlePass();
   } else {
+    // Numbers only
     if (/^[0-9]$/.test(key)) {
       handleInputCharacter(key);
     }
@@ -1058,6 +1285,7 @@ function shuffleArray(array) {
   }
 }
 
+// Result clipboard format
 function copyResultsToClipboard() {
   const rank = elements.rankBadge.textContent;
   const time = elements.resultTime.textContent;
@@ -1071,7 +1299,7 @@ function copyResultsToClipboard() {
   const text = `【サイゼリヤ注文コードタイピング】
 形式: ${formatText}
 称号: ${rank}
-結果: ${correct}品オーダー成功 (ミス: ${wrong}回)
+結果: ${correct}品オーダー成功 (ミス/パス/時間切れ: ${wrong}回)
 最高コンボ: ${maxCombo}
 入力精度: ${acc}
 想定会計: ${totalSaved}

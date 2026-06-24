@@ -1094,6 +1094,109 @@ body {
   justify-content: center;
 }
 
+/* QUESTION TIMER BAR */
+.question-timer-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.question-timer-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--accent-yellow);
+  transition: width 0.1s linear, background-color 0.3s ease;
+}
+
+/* REVIEW ANSWERS BOX */
+.review-box {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-md);
+  padding: 18px;
+  box-shadow: var(--shadow-glass);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.review-box h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-white);
+  margin-bottom: 12px;
+  border-left: 3px solid var(--accent-red);
+  padding-left: 8px;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--accent-red);
+}
+
+.review-item.passed {
+  border-left-color: var(--accent-yellow);
+}
+
+.review-item-name {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.review-item-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-item-code {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent-yellow);
+  background: rgba(255, 183, 3, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.review-item-status {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.status-timeout {
+  background: rgba(230, 57, 70, 0.15);
+  color: var(--accent-red);
+}
+
+.status-passed {
+  background: rgba(255, 183, 3, 0.15);
+  color: var(--accent-yellow);
+}
+
+.review-empty-message {
+  font-size: 13px;
+  color: var(--accent-green);
+  text-align: center;
+  font-weight: 700;
+  padding: 16px 0;
+}
+
 /* --- FOOTER --- */
 .app-footer {
   margin-top: 40px;
