@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="サイゼリヤのメニュー名が表示されたら、瞬時に4桁の注文コードを入力するタイピングゲーム！">
+  <title>サイゼリヤ 注文コードタイピング - Saizeriya Order Code Typing Game</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Canvas for Particle Confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="flag-stripe green"></span>
+        <span class="flag-stripe white"></span>
+        <span class="flag-stripe red"></span>
+        <h1 class="logo-title">Saizeriya <span class="accent-text">Typing</span></h1>
+      </div>
+      <div class="header-controls">
+        <button id="sound-toggle-btn" class="icon-btn" aria-label="音声をミュート/解除" title="効果音オン/オフ">
+          <svg class="sound-on-icon" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.03,19.86 21,16.28 21,12C21,7.72 18.03,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+          </svg>
+          <svg class="sound-off-icon hidden" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M3,9H7L12,4V20L7,15H3V9M16.5,12C16.5,10.23 15.5,8.71 14,7.97V11L16.43,13.43C16.47,12.96 16.5,12.49 16.5,12M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,12.82 18.82,13.6 18.5,14.34L19.97,15.81C20.63,14.65 21,13.37 21,12C21,7.72 18.03,4.14 14,3.23M2.39,1.73L1.11,3L20.67,22.56L21.95,21.28L2.39,1.73Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Screens Wrapper -->
+    <main class="game-wrapper">
+      
+      <!-- START SCREEN -->
+      <section id="screen-start" class="game-screen active">
+        <div class="hero-section">
+          <p class="hero-tag">サイゼの注文を極めし者へ</p>
+          <h2 class="hero-title">注文コード<br><span class="highlight-text">スピードタイピング</span></h2>
+          <p class="hero-desc">表示されるサイゼリヤのメニュー名を見て、4桁の注文コードを素早く入力してください。</p>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Format Selection -->
+          <div class="settings-card">
+            <h3>1. ゲーム形式を選択</h3>
+            <div class="radio-group-tile">
+              <label class="tile-option">
+                <input type="radio" name="game-format" value="timeattack" checked>
+                <div class="tile-content">
+                  <span class="tile-title">タイムアタック</span>
+                  <span class="tile-desc">10問正解するまでの時間を競います。正確性とスピードが鍵！</span>
+                </div>
+              </label>
+              <label class="tile-option">
+                <input type="radio" name="game-format" value="survival">
+                <div class="tile-content">
+                  <span class="tile-title">サバイバル</span>
+                  <span class="tile-desc">制限時間30秒からスタート。正解で時間増加(+3秒)、ミスで減少(-5秒)。限界に挑め！</span>
+                </div>
+              </label>
+              <label class="tile-option">
+                <input type="radio" name="game-format" value="practice">
+                <div class="tile-content">
+                  <span class="tile-title">練習モード</span>
+                  <span class="tile-desc">制限時間なし、問題数無限。ヒントを常時表示可能。初心者の練習に。</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category Selection -->
+          <div class="settings-card">
+            <h3>2. メニューカテゴリを選択 (複数可)</h3>
+            <div class="checkbox-group" id="category-selectors">
+              <label class="chip-option checked">
+                <input type="checkbox" value="all" checked>
+                <span>全メニュー</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="appetizer">
+                <span>前菜・おつまみ</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="salad">
+                <span>サラダ・スープ</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="pasta">
+                <span>パスタ・ピザ</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="doria">
+                <span>ドリア・肉料理</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="dessert">
+                <span>デザート</span>
+              </label>
+              <label class="chip-option">
+                <input type="checkbox" value="drink">
+                <span>ドリンク・アルコール</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-area">
+          <button id="start-game-btn" class="primary-btn pulse-glow">
+            <span>オーダー開始する！</span>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- PLAY SCREEN -->
+      <section id="screen-play" class="game-screen">
+        <!-- Play Header Stats -->
+        <div class="play-stats-bar">
+          <div class="stat-box">
+            <span class="stat-label" id="progress-label">問題</span>
+            <span class="stat-value font-numeric" id="progress-value">1/10</span>
+          </div>
+
+          <div class="timer-container">
+            <div class="timer-track">
+              <div id="timer-bar" class="timer-bar"></div>
+            </div>
+            <span id="timer-text" class="timer-text font-numeric">00:00</span>
+          </div>
+
+          <div class="stat-box">
+            <span class="stat-label">コンボ</span>
+            <div class="combo-bubble">
+              <span class="stat-value font-numeric" id="combo-value">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Menu Card -->
+        <div id="target-menu-card" class="menu-card">
+          <div class="card-inner">
+            <div class="menu-badge" id="menu-category-tag">前菜</div>
+            <h3 class="menu-name" id="menu-display-name">辛味チキン</h3>
+            <div class="menu-price-container">
+              <span class="menu-price-label">税込</span>
+              <span class="menu-price font-numeric" id="menu-display-price">¥300</span>
+            </div>
+            <div id="hint-box" class="hint-box hidden">
+              <span class="hint-text">ヒント: <span id="hint-content" class="font-numeric">AA--</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code Input Slots -->
+        <div class="input-display-area">
+          <div class="slots-container" id="input-slots">
+            <div class="input-slot active" data-index="0"></div>
+            <div class="input-slot" data-index="1"></div>
+            <div class="input-slot" data-index="2"></div>
+            <div class="input-slot" data-index="3"></div>
+          </div>
+        </div>
+
+        <!-- Keyboard UI (Dynamic Grid) -->
+        <div class="keyboard-container">
+          <div id="virtual-keypad" class="keypad-grid numeric-layout">
+            <!-- Will be generated dynamically by JavaScript based on mode -->
+          </div>
+        </div>
+
+        <!-- Play Footer Controls -->
+        <div class="play-controls">
+          <button id="give-up-btn" class="secondary-btn text-danger">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M13,3A9,9 0 0,0 4,12H1L4.89,15.89L4.9,16L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z" />
+            </svg>
+            <span>ギブアップ</span>
+          </button>
+          <button id="reveal-hint-btn" class="secondary-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15M12,7A3,3 0 0,1 15,10C15,11.37 13.87,12.25 13,13C12.13,13.75 12,14.5 12,15H11C11,14 11.5,13 12.5,12C13.5,11 14,10.5 14,10A2,2 0 0,0 12,8A2,2 0 0,0 10,10H9A3,3 0 0,1 12,7Z" />
+            </svg>
+            <span>ヒントを見る</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- RESULTS SCREEN -->
+      <section id="screen-results" class="game-screen">
+        <div class="results-header">
+          <p class="results-tag">ゲーム終了！</p>
+          <h2 class="results-title">オーダー結果</h2>
+          
+          <!-- Rank Badge -->
+          <div class="rank-container">
+            <span class="rank-label">称号</span>
+            <div id="rank-badge" class="rank-badge glow">サイゼ通</div>
+          </div>
+        </div>
+
+        <div class="results-layout">
+          <!-- Thematic Saizeriya Receipt -->
+          <div class="receipt-paper">
+            <div class="receipt-cut"></div>
+            <div class="receipt-body">
+              <div class="receipt-header">
+                <h3>サイゼリヤタイピング店</h3>
+                <p class="receipt-meta" id="receipt-date">2026/06/24 19:15</p>
+                <p class="receipt-meta">伝票番号: <span id="receipt-id" class="font-numeric">9823-1122</span></p>
+              </div>
+              
+              <div class="receipt-divider"></div>
+              
+              <!-- Correct Items List -->
+              <table class="receipt-table">
+                <thead>
+                  <tr>
+                    <th>品名</th>
+                    <th class="text-right">コード</th>
+                    <th class="text-right">金額</th>
+                  </tr>
+                </thead>
+                <tbody id="receipt-items">
+                  <!-- Will be generated dynamically -->
+                  <tr>
+                    <td>ミラノ風ドリア</td>
+                    <td class="font-numeric text-right">DG01</td>
+                    <td class="font-numeric text-right">¥300</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="receipt-divider"></div>
+
+              <!-- Calculations -->
+              <div class="receipt-summary">
+                <div class="summary-row">
+                  <span>正解数</span>
+                  <span id="receipt-correct-count" class="font-numeric">10点</span>
+                </div>
+                <div class="summary-row">
+                  <span>ミス入力</span>
+                  <span id="receipt-wrong-count" class="font-numeric">2回</span>
+                </div>
+                <div class="summary-row">
+                  <span>最高コンボ</span>
+                  <span id="receipt-max-combo" class="font-numeric">8 Combo</span>
+                </div>
+                <div class="summary-row">
+                  <span>入力精度</span>
+                  <span id="receipt-accuracy" class="font-numeric">92.4%</span>
+                </div>
+                <div class="summary-row strong">
+                  <span>お会計（想定）</span>
+                  <span id="receipt-total-price" class="font-numeric">¥3,000</span>
+                </div>
+              </div>
+
+              <div class="receipt-divider"></div>
+              
+              <div class="receipt-footer">
+                <p>タイピングありがとうございました！</p>
+                <div class="barcode">
+                  <div class="barcode-line" style="width: 2px;"></div>
+                  <div class="barcode-line" style="width: 1px;"></div>
+                  <div class="barcode-line" style="width: 3px;"></div>
+                  <div class="barcode-line" style="width: 1px;"></div>
+                  <div class="barcode-line" style="width: 2px;"></div>
+                  <div class="barcode-line" style="width: 4px;"></div>
+                  <div class="barcode-line" style="width: 1px;"></div>
+                  <div class="barcode-line" style="width: 2px;"></div>
+                  <div class="barcode-line" style="width: 3px;"></div>
+                  <div class="barcode-line" style="width: 1px;"></div>
+                  <div class="barcode-line" style="width: 2px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="receipt-cut bottom"></div>
+          </div>
+
+          <!-- Score Card & Extra Stats -->
+          <div class="results-stats-panel">
+            <div class="metric-card">
+              <span class="metric-label">クリアタイム / 制限時間</span>
+              <span id="result-time" class="metric-value font-numeric">00:45.32</span>
+            </div>
+            
+            <div class="metric-card">
+              <span class="metric-label">平均キー入力速度</span>
+              <span id="result-speed" class="metric-value font-numeric">1.25秒/個</span>
+            </div>
+
+            <!-- Weak / Strong analysis -->
+            <div class="analysis-box">
+              <h4>オーダー分析</h4>
+              <div class="analysis-item">
+                <span class="analysis-label">得意メニュー:</span>
+                <span id="analysis-fastest" class="analysis-val">ミラノ風ドリア (0.6秒)</span>
+              </div>
+              <div class="analysis-item">
+                <span class="analysis-label">苦手メニュー:</span>
+                <span id="analysis-slowest" class="analysis-val">アロスティチーニ (3.2秒)</span>
+              </div>
+            </div>
+
+            <div class="results-actions">
+              <button id="share-twitter-btn" class="primary-btn twitter-btn">
+                <span>結果をクリップボードにコピー</span>
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+                </svg>
+              </button>
+              <div class="action-btn-row">
+                <button id="retry-btn" class="primary-btn">
+                  <span>もう一度プレイ</span>
+                </button>
+                <button id="back-home-btn" class="secondary-btn">
+                  <span>設定に戻る</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>© 2026 サイゼリヤ注文コードタイピングゲーム - Pair Programmed with Antigravity</p>
+      <p class="disclaimer">※本アプリはサイゼリヤ公式とは一切関係のないファンメイドのタイピング練習ゲームです。メニュー内容やコードは改定等により異なる場合があります。</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
