@@ -663,6 +663,13 @@ function startGame() {
   // Render Virtual Keypad (numeric only)
   renderKeypad();
 
+  // Set hint button label based on format
+  if (gameState.format === 'practice') {
+    elements.revealHintBtn.querySelector('span').textContent = '答えを見る';
+  } else {
+    elements.revealHintBtn.querySelector('span').textContent = 'ヒントを見る';
+  }
+
   // Show screen
   switchScreen('play');
   
@@ -1019,7 +1026,17 @@ function handleTimeout() {
 function revealHint(autoPractice = false) {
   const currentItem = gameState.questions[gameState.currentIndex];
   const targetCode = currentItem.code;
-  const hintStr = targetCode.substring(0, 2) + '••';
+  
+  let hintStr = '';
+  if (gameState.format === 'practice') {
+    if (autoPractice) {
+      hintStr = targetCode.substring(0, 2) + '••';
+    } else {
+      hintStr = targetCode; // Reveal full answer in Practice mode
+    }
+  } else {
+    hintStr = targetCode.substring(0, 2) + '••';
+  }
 
   elements.hintContent.textContent = hintStr;
   elements.hintBox.classList.remove('hidden');
