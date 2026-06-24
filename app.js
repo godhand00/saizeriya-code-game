@@ -1164,10 +1164,16 @@ function endGame(completed = true) {
       itemRow.appendChild(detailsDiv);
       elements.reviewList.appendChild(itemRow);
     });
-  } else {
+  } else if (gameState.correctCount > 0) {
     const emptyMsg = document.createElement('div');
     emptyMsg.className = 'review-empty-message';
     emptyMsg.textContent = '全問正解！サイゼマスターです！💮';
+    elements.reviewList.appendChild(emptyMsg);
+  } else {
+    const emptyMsg = document.createElement('div');
+    emptyMsg.className = 'review-empty-message';
+    emptyMsg.style.color = 'var(--text-muted)';
+    emptyMsg.textContent = '正解した問題はありませんでした。';
     elements.reviewList.appendChild(emptyMsg);
   }
 
